@@ -46,12 +46,12 @@ void
 void
   startup()
 {
-  tolog("Welcome to Polarized");
+  tolog("Welcome to Polarized.");
   tolog("");
   tolog("First of all you had to summon");
-  tolog("your player");
+  tolog("your player.");
   tolog("");
-  tolog("To do so type help");
+  tolog("To do so type help.");
   tolog("");
 }
 
@@ -80,9 +80,9 @@ void
   tolog("Here is the lst of all the commands");
   tolog("available");
   tolog("");
-  tolog("help - show this page");
+  tolog("help - show this page.");
   if (!is_summoned)
-    tolog("summon 0<>8 A<>H - create your player");
+    tolog("summon 0<>8 A<>H - create your player.");
   tolog("");
 }
 
@@ -129,7 +129,12 @@ void
   {
     if (entry.charAt(11) == 'A' || entry.charAt(11) == 'B' || entry.charAt(11) == 'C' || entry.charAt(11) == 'D' || entry.charAt(11) == 'E' || entry.charAt(11) == 'F' || entry.charAt(11) == 'G' || entry.charAt(11) == 'H')
     {
-      tolog("Player was summoned in " + entry.substring(9, entry.length()));
+      tolog("Player was summoned in " + entry.substring(9, 11) + ".");
+      tolog("");
+      tolog("Nice now you can try to move in each");
+      tolog("directions now.");
+      tolog("Consult your objectives with obj command.");
+      tolog("");
       is_summoned = true;
       createPlayer(entry.charAt(9) - '0', entry.charAt(11));
       tolog("New commands added type help");
@@ -238,7 +243,7 @@ void
     x = 0;
     while (x < 8)
     {
-      if (player_pos[y][x] == 1)
+      if (player_pos[x][y] == 1)
         image(player, offset_x + (x - y) * 20 - 4, offset_y + (y + x) * 12 - 45, 60, 70);
       x++;
     }
