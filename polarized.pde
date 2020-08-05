@@ -6,7 +6,7 @@ int  map[][] = {
   {0, 0, 0, 0, 0, 0, 0, 0},
   {0, 0, 0, 0, 0, 0, 0, 0},
   {0, 0, 0, 0, 0, 0, 0, 0},
-  {0, 0, 0, 3, 2, 0, 0, 1}
+  {0, 0, 0, 0, 0, 0, 0, 0}
 };
 
 int player_pos[][] = {
@@ -17,7 +17,7 @@ int player_pos[][] = {
   {0, 0, 0, 0, 0, 0, 0, 0},
   {0, 0, 0, 0, 0, 0, 0, 0},
   {0, 0, 0, 0, 0, 0, 0, 0},
-  {0, 0, 0, 0, 0, 0, 0, 1}
+  {0, 0, 0, 0, 0, 0, 0, 0}
 };
 
 int  s_width = 1920;
@@ -28,10 +28,31 @@ PImage floor_1;
 PImage floor_2;
 PImage floor_3;
 PImage input_frame;
+PImage sky;
 PFont  font;
 PFont  font_term;
 String entry = "> ";
 String log[] = {""};
+
+boolean is_summoned = false;
+
+void
+  tolog(String str)
+{
+  log = append(log, str);
+}
+
+void
+  startup()
+{
+  tolog("Welcome to Polarized");
+  tolog("");
+  tolog("First of all you had to summon");
+  tolog("your player");
+  tolog("");
+  tolog("To do so type help");
+  tolog("");
+}
 
 void
   setup()
@@ -40,22 +61,49 @@ void
   floor_1 = loadImage("floor_1.png");
   floor_2 = loadImage("floor_2.png");
   floor_3 = loadImage("floor_3.png");
+  sky = loadImage("sky.jpg");
   input_frame = loadImage("input_frame.png");
   font = createFont("8bitlim.ttf", 16);
   font_term = createFont("lunchds.ttf", 16);
   textFont(font);
+  startup();
 }
 
 int time = 0;
 int fps = 30;
 
 void
+  help()
+{
+  tolog("Here is the lst of all the commands");
+  tolog("available");
+  tolog("");
+  tolog("help - show this page");
+  if (!is_summoned)
+    tolog("summon 0<>8 A<>H - create your player");
+  tolog("");
+}
+
+void
+  summon()
+{
+  tolog("Player was summoned in " + entry.substring(9, entry.length()));
+  tolog("");
+  is_summoned = true;
+}
+
+void
   command_logic()
 {
   if (entry.equals("> help"))
-    log = append(log, "Here is the lst of all the commands aviable");
+    help();
+  else if (entry.length() > 8 && entry.substring(2, 8).equals("summon") && is_summoned == false)
+    summon();
   else
-    log = append(log, entry.substring(2, entry.length()) + " command not found");
+  {
+    tolog(entry.substring(2, entry.length()) + " command not found");
+    tolog("");
+  }
 }
 
 void
@@ -64,8 +112,10 @@ void
   entry = entry + key;
   if (keyCode == BACKSPACE)
   {
-    if (entry.length() > 2)
+    if (entry.length() > 3)
       entry = entry.substring( 0, entry.length()-2 );
+    else
+      entry = entry.substring( 0, entry.length()-1 );
   }
   if (keyCode == SHIFT)
     entry = entry.substring( 0, entry.length()-1 );
@@ -74,7 +124,7 @@ void
     entry = entry.substring( 0, entry.length()-1 );
     if (entry.length() > 2)
     {
-      log = append(log, entry);
+      tolog(entry);
       command_logic();
     }
     entry = "> ";
@@ -90,6 +140,7 @@ void
   int y = 0;
   
   background(50);
+  image(sky, 0, 0, 800, 400);
   stroke(200);
   line(400, 0, 400, 400);
   while (y < 8)
