@@ -28,6 +28,7 @@ PImage floor_1;
 PImage floor_2;
 PImage floor_3;
 PImage input_frame;
+PImage player;
 PImage sky;
 PFont  font;
 PFont  font_term;
@@ -62,6 +63,7 @@ void
   floor_2 = loadImage("floor_2.png");
   floor_3 = loadImage("floor_3.png");
   sky = loadImage("sky.jpg");
+  player = loadImage("player.png");
   input_frame = loadImage("input_frame.png");
   font = createFont("8bitlim.ttf", 16);
   font_term = createFont("lunchds.ttf", 16);
@@ -85,11 +87,65 @@ void
 }
 
 void
-  summon()
+  createPlayer(int row, char c)
 {
-  tolog("Player was summoned in " + entry.substring(9, entry.length()));
+  int col = 0;
+  switch(c)
+  {
+    case 'A':
+      col = 0;
+      break;
+    case 'B':
+      col = 1;
+      break;
+    case 'C':
+      col = 2;
+      break;
+    case 'D':
+      col = 3;
+      break;
+    case 'E':
+      col = 4;
+      break;
+    case 'F':
+      col = 5;
+      break;
+    case 'G':
+      col = 6;
+      break;
+    case 'H':
+      col = 7;
+      break;
+  }
+  player_pos[col][row] = 1;
+}
+
+void
+  summon()
+{ 
   tolog("");
-  is_summoned = true;
+  println(entry.charAt(9));
+  if (entry.charAt(9) >= '0' && entry.charAt(9) < '9')
+  {
+    if (entry.charAt(11) == 'A' || entry.charAt(11) == 'B' || entry.charAt(11) == 'C' || entry.charAt(11) == 'D' || entry.charAt(11) == 'E' || entry.charAt(11) == 'F' || entry.charAt(11) == 'G' || entry.charAt(11) == 'H')
+    {
+      tolog("Player was summoned in " + entry.substring(9, entry.length()));
+      is_summoned = true;
+      createPlayer(entry.charAt(9) - '0', entry.charAt(11));
+      tolog("New commands added type help");
+      tolog("");
+    }
+    else
+    {
+      tolog("Wrong position\n");
+      is_summoned = false;
+    }
+  }
+  else
+  {
+    tolog("Wrong position\n");
+    is_summoned = false;
+  }
 }
 
 void
@@ -175,6 +231,19 @@ void
   text("G", abs(60 - 405), 170);
   text("H", abs(40 - 405), 185);
   image(input_frame, 400, 0);
+  x = 0;
+  y = 0;
+  while (y < 8)
+  {
+    x = 0;
+    while (x < 8)
+    {
+      if (player_pos[y][x] == 1)
+        image(player, offset_x + (x - y) * 20 - 4, offset_y + (y + x) * 12 - 45, 60, 70);
+      x++;
+    }
+    y++;
+  }
   textFont(font_term);
   text(entry, 415, 375);
   int i = 0;
