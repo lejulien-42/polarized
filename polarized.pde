@@ -29,6 +29,7 @@ PImage floor_2;
 PImage floor_3;
 PImage input_frame;
 PImage player;
+PImage item;
 PImage sky;
 PFont  font;
 PFont  font_term;
@@ -64,6 +65,7 @@ void
   floor_3 = loadImage("floor_3.png");
   sky = loadImage("sky.jpg");
   player = loadImage("player.png");
+  item = loadImage("item.png");
   input_frame = loadImage("input_frame.png");
   font = createFont("8bitlim.ttf", 16);
   font_term = createFont("lunchds.ttf", 16);
@@ -81,8 +83,14 @@ void
   tolog("available");
   tolog("");
   tolog("help - show this page.");
+  tolog("");
   if (!is_summoned)
-    tolog("summon 0<>8 A<>H - create your player.");
+    tolog("summon [0-7] [A-H] - create your player.");
+  else
+  {
+    tolog("move [UP, LEFT, RIGHT, DOWN] - move the");
+    tolog("player");
+  }
   tolog("");
 }
 
@@ -118,18 +126,18 @@ void
       break;
   }
   player_pos[col][row] = 1;
+  map[row][col] = 2;
 }
 
 void
   summon()
 { 
   tolog("");
-  println(entry.charAt(9));
   if (entry.charAt(9) >= '0' && entry.charAt(9) < '9')
   {
     if (entry.charAt(11) == 'A' || entry.charAt(11) == 'B' || entry.charAt(11) == 'C' || entry.charAt(11) == 'D' || entry.charAt(11) == 'E' || entry.charAt(11) == 'F' || entry.charAt(11) == 'G' || entry.charAt(11) == 'H')
     {
-      tolog("Player was summoned in " + entry.substring(9, 11) + ".");
+      tolog("Player was summoned in " + entry.substring(9, 12) + ".");
       tolog("");
       tolog("Nice now you can try to move in each");
       tolog("directions now.");
@@ -154,12 +162,165 @@ void
 }
 
 void
+  moveDown()
+{
+  int x = 0;
+  int y = 0;
+  boolean is_moved = false;
+  
+  while (y < 8)
+  {
+    x = 0;
+    while (x < 8)
+    {
+      if (player_pos[x][y] == 1 && !is_moved)
+      {
+        if (y != 7)
+        {
+          if (player_pos[x][y + 1] == 0)
+          {
+            player_pos[x][y + 1] = 1;
+            player_pos[x][y] = 0;
+            is_moved = true;
+          }
+          else
+            tolog("There is something on your way.");
+        }
+        else
+          tolog("suicide is not a solution.");
+      }
+      x++;
+    }
+    y++;
+  }
+}
+
+void
+  moveUp()
+{
+  int x = 0;
+  int y = 0;
+  boolean is_moved = false;
+  
+  while (y < 8)
+  {
+    x = 0;
+    while (x < 8)
+    {
+      if (player_pos[x][y] == 1 && !is_moved)
+      {
+        if (y != 0)
+        {
+          if (player_pos[x][y - 1] == 0)
+          {
+            player_pos[x][y - 1] = 1;
+            player_pos[x][y] = 0;
+            is_moved = true;
+          }
+          else
+            tolog("There is something on your way.");
+        }
+        else
+          tolog("suicide is not a solution.");
+      }
+      x++;
+    }
+    y++;
+  }
+}
+
+void
+  moveLeft()
+{
+  int x = 0;
+  int y = 0;
+  boolean is_moved = false;
+  
+  while (y < 8)
+  {
+    x = 0;
+    while (x < 8)
+    {
+      if (player_pos[x][y] == 1 && !is_moved)
+      {
+        if (x != 0)
+        {
+          if (player_pos[x - 1][y] == 0)
+          {
+            player_pos[x - 1][y] = 1;
+            player_pos[x][y] = 0;
+            is_moved = true;
+          }
+          else
+            tolog("There is something on your way.");
+        }
+        else
+          tolog("suicide is not a solution.");
+      }
+      x++;
+    }
+    y++;
+  }
+}
+
+void
+  moveRight()
+{
+  int x = 0;
+  int y = 0;
+  boolean is_moved = false;
+  
+  while (y < 8)
+  {
+    x = 0;
+    while (x < 8)
+    {
+      if (player_pos[x][y] == 1 && !is_moved)
+      {
+        if (x != 7)
+        {
+          if (player_pos[x + 1][y] == 0)
+          {
+            player_pos[x + 1][y] = 1;
+            player_pos[x][y] = 0;
+            is_moved = true;
+          }
+          else
+            tolog("There is something on youur way.");
+        }
+        else
+          tolog("suicide is not a solution.");
+      }
+      x++;
+    }
+    y++;
+  }
+}
+
+void
+  move()
+{
+  if (entry.substring(7, entry.length()).toLowerCase().equals("up"))
+    moveUp();
+  else if (entry.substring(7, entry.length()).toLowerCase().equals("down"))
+    moveDown();
+  else if (entry.substring(7, entry.length()).toLowerCase().equals("left"))
+    moveLeft();
+  else if (entry.substring(7, entry.length()).toLowerCase().equals("right"))
+    moveRight();
+  else
+    tolog("Wrong arguments.");
+}
+
+void
   command_logic()
 {
   if (entry.equals("> help"))
     help();
-  else if (entry.length() > 8 && entry.substring(2, 8).equals("summon") && is_summoned == false)
+  else if (entry.length() == 12 && entry.substring(2, 8).equals("summon") && is_summoned == false)
     summon();
+  else if (entry.length() > 7 && entry.substring(2, 6).equals("move") && is_summoned)
+    move();
   else
   {
     tolog(entry.substring(2, entry.length()) + " command not found");
@@ -245,6 +406,8 @@ void
     {
       if (player_pos[x][y] == 1)
         image(player, offset_x + (x - y) * 20 - 4, offset_y + (y + x) * 12 - 45, 60, 70);
+      if (player_pos[x][y] == 2)
+        image(item, offset_x + (x - y) * 20 + 15, offset_y + (y + x) * 12, 16, 16);
       x++;
     }
     y++;
